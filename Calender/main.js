@@ -1,18 +1,8 @@
-import Calendar from '@toast-ui/calendar';
-import '@toast-ui/calendar/dist/toastui-calendar.min.css';
+import { initCalendar } from './calendarFiles/init.js';
+import { loadEvents } from './calendarFiles/events.js';
+import { attachHandlers } from './calendarFiles/handlers.js';
 
-const calendar = new Calendar('#calendar', {
-    defaultView: 'month',
-    usageStatistics: false,
-});
+const calendar = initCalendar();
 
-calendar.createEvents([
-    {
-        id: '1',
-        calendarId: '1',
-        title: 'First Event',
-        category: 'time',
-        start: new Date().toISOString(),
-        end: new Date(Date.now() + 3600000).toISOString(),
-    },
-]);
+loadEvents(calendar);
+attachHandlers(calendar);

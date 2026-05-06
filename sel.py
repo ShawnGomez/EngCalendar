@@ -24,23 +24,22 @@ from selenium.webdriver.support.ui import WebDriverWait
 local_appdata = os.getenv("LOCALAPPDATA")
 
 with open("UserData.txt", "r") as file:
-    for line in file:
-        line = line.strip()
+    line = file.read().splitlines()
 if line[1]=="Opera":
     browserPath=os.path.join(os.getenv("LOCALAPPDATA"),"Opera Software","Opera GX Stable")
+    options.binary_location =os.path.join(os.getenv("APPDATA"),"Microsoft","Windows","Start Menu","Programs")
 elif line[1]=="Chrome":
     browserPath=os.path.join(os.getenv("LOCALAPPDATA"),"Google","Chrome","User Data")
-    options.binary_location =os.path.join(os.getenv("APPDATA"),"Microsoft","Windows","Start Menu","Programs")
+    options.binary_location =os.path.join(os.getenv("PROGRAMDATA"),"Microsoft","Windows","Start Menu","Programs")
 elif line[1]=="Brave":
     browserPath=os.path.join(os.getenv("LOCALAPPDATA"),"BraveSoftware","Brave-Browser","User Data")
 elif line[1]=="Microsoft Edge":
     browserPath=os.path.join(os.getenv("LOCALAPPDATA"),"Microsoft","Edge","User Data")
-    
+    options.binary_location =os.path.join(os.getenv("PROGRAMDATA"),"Microsoft","Windows","Start Menu","Programs")
 
 
 # path to Opera executable
 options.binary_location = r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs" # location of chrome and all other executables (like edge)
-chrome_path=r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
 
 options.add_argument(r"user-data-dir=C:\Users\ejlok\AppData\Local\Google\Chrome\User Data") # add_argument to specify particular variable, like user-data-dir=
 LoggedInProfiles = []

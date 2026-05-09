@@ -3,81 +3,139 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from datetime import datetime 
 import time
 
-# ---------------- SETUP ----------------
-options = Options()
-options.add_argument(r"user-data-dir=C:\selenium-edge-profile")
-options.add_argument("--remote-debugging-port=9222")
-options.add_argument("--start-maximized")
+def setup_driver():
 
-driver = webdriver.Edge(options=options)
+    #Setup with saved no user account edge profile 
+    options = Options()
+    options.add_argument(r"user-data-dir=C:\selenium-edge-profile")
+    options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--start-maximized")
 
-try:
-    # ---------------- OPEN PAGE ----------------
+    return webdriver.Edge(options=options)
+
+def scrape():
+
+    driver = setup_driver()
+
+    #Start off in the work to do page
     driver.get('https://westernu.brightspace.com/d2l/le/worktodo/view')
 
+    #It goes to the login page
     print("Waiting 30 seconds for manual login/page load...")
-    time.sleep(30)
+    time.sleep(30) #Sleep
 
-    # ---------------- HANDLE IFRAME (IF EXISTS) ----------------
-    iframes = driver.find_elements(By.TAG_NAME, "iframe")
-    if len(iframes) > 0:
-        driver.switch_to.frame(iframes[0])
-        print("Switched to iframe context.")
-
-    # ---------------- WAIT FOR MAIN CONTAINER ----------------
-    print("Waiting for Work To Do container...")
+    #Waiting for the main page content
+    print("Waiting for Work To Do page content")
     wait = WebDriverWait(driver, 20)
+
     wait.until(EC.presence_of_element_located((By.TAG_NAME, "d2l-w2d-work-to-do")))
+    print("Container found! Proceeding to Shadow DOM extraction...")
 
-    # ---------------- METHOD 1: FULL SHADOW DOM SCRAPE ----------------
+    # Javascript block to Scrape Shadow DOMS 
+
     print("Attempting full Shadow DOM extraction...")
-
+    #Collecting the links
     script = """
-    const container = document.querySelector('d2l-w2d-work-to-do');
-    if (!container || !container.shadowRoot) return [];
+    const foundItems = [];
 
-    const items = container.shadowRoot.querySelectorAll('d2l-activity-name-assignment');
+    let root1 = document.querySelector("d2l-w2d-work-to-do")?.shadowRoot;
+    let root2 = root1?.querySelector("d2l-w2d-collections")?.shadowRoot;
 
-    return Array.from(items).map(item => {
-        try {
-            return item.shadowRoot
-                .querySelector('d2l-hc-name').shadowRoot
-                .querySelector('span').innerText.trim();
-        } catch (e) {
-            return null;
+    for (let i = 1; i <= 100; i++) {
+        let root3 = root2?.querySelector(`d2l-w2d-list:nth-child(${i})`)?.shadowRoot;
+        if (!root3) continue;
+
+        for (let j = 1; j <= 100; j++) {
+            // Handle ASSIGNMENT types
+            const item = root3.querySelector(`d2l-w2d-list-item-assignment:nth-child(${j})`);
+            if (item) {
+                const nameEl = item.shadowRoot?.querySelector("d2l-activity-name-assignment");
+                const linkEl = item.shadowRoot?.querySelector("a");
+                if (linkEl) {
+                    foundItems.push({
+                        "url": linkEl.href,
+                        "name": nameEl ? nameEl.getAttribute("_label") : "Unknown Name"
+                    });
+                }
+            }
+
+            // Handle CONTENT types
+            const content = root3.querySelector(`d2l-w2d-list-item-content:nth-child(${j})`);
+            if (content) {
+                const linkEl = content.shadowRoot?.querySelector("a");
+                if (linkEl) {
+                    foundItems.push({
+                        "url": linkEl.href,
+                        "name": "Content Item" // Content items might use different name labels
+                    });
+                }
+            }
         }
-    }).filter(x => x !== null);
+    }
+    return foundItems;
     """
-
     results = driver.execute_script(script)
 
-    # ---------------- FALLBACK METHOD ----------------
-    if not results:
-        print("Fallback: Using per-element extraction...")
+    assignments = []
 
-        activities = driver.find_elements(By.TAG_NAME, "d2l-activity-name-assignment")
+    for current_item in results:
+        print(f"Scraping: {current_item['name']}")
+        print(f"URL: {current_item['url']}")
+        
+        # Navigate to the assignment page
+        driver.get(current_item['url'])
+        
+        # Use try/except because different assignment pages might have different structures
+        try:
+            
+            description = driver.execute_script("""
+            const block = document.querySelector("d2l-html-block");
 
-        for i, activity in enumerate(activities, 1):
-            try:
-                name = driver.execute_script("""
-                    return arguments[0]
-                        .shadowRoot.querySelector('d2l-hc-name')
-                        .shadowRoot.querySelector('span')
-                        .innerText.trim();
-                """, activity)
+            if (!block) return null;
 
-                print(f"{i}. {name}")
-            except:
-                print(f"{i}. Could not extract name")
+            // Create temporary element
+            const temp = document.createElement("div");
 
-    else:
-        print(f"\n--- Found {len(results)} Items ---")
-        for i, name in enumerate(results, 1):
-            print(f"{i}. {name}")
+            // Insert HTML
+            temp.innerHTML = block.getAttribute("html");
 
-# ---------------- CLEANUP ----------------
-finally:
-    time.sleep(10)
+            // Return clean text
+            return temp.innerText;
+        """) 
+
+            due_date = driver.execute_script("""return document.querySelector("#z_i > td > div > div")?.innerText""")
+
+            raw_due = due_date.replace("Due on ", "").strip()
+
+            parsed_due = datetime.strptime(
+                raw_due,
+                "%b %d, %Y %I:%M %p"
+            )
+
+            course_name = driver.find_element(
+                By.CSS_SELECTOR,
+                "a.d2l-navigation-s-link"
+            ).text
+            
+            print(f"Course name: {course_name}")
+
+            print(f"Description: {description}")
+            print(f"Due Date: {due_date}")
+
+            assignments.append({
+            "name": current_item["name"],
+            "url": current_item["url"],
+            "course_name":course_name,
+            "description": description,
+            "due_date": parsed_due
+        })
+
+        except Exception as e:
+            print(f"Could not extract details for this item: {e}")
+
+    return assignments 
+    #Cleanup 
     driver.quit()

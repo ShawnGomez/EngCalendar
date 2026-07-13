@@ -1,0 +1,141 @@
+.calendar-view {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.cal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cal-month {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.today-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4F46E5;
+  background: #EEF2FF;
+  border: none;
+  border-radius: 20px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.today-btn:hover { background: #E0E7FF; }
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #6B7280;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1;
+}
+
+.nav-btn:hover {
+  background: #F3F4F6;
+  color: #111827;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.day-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9CA3AF;
+  padding: 10px 0 8px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.day-cell {
+  min-height: 90px;
+  padding: 8px 6px 6px;
+  border-right: 1px solid #F3F4F6;
+  border-bottom: 1px solid #F3F4F6;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.day-cell:nth-child(7n) {
+  border-right: none;
+}
+
+.day-cell:hover:not(.empty) {
+  background: #FAFAFA;
+}
+
+.day-cell.empty {
+  background: #FAFBFC;
+  cursor: default;
+}
+
+.day-cell.today {
+  background: #FAFBFF;
+}
+
+.day-num {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.day-num.today-num {
+  background: #4F46E5;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.dots-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+}
+
+.more-tasks {
+  font-size: 10px;
+  color: #9CA3AF;
+  font-weight: 600;
+}

@@ -1,0 +1,430 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  background: #F0F2F8;
+  color: #111827;
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: #ffffff;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  font-size: 22px;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.03em;
+}
+
+.overdue-badge {
+  font-size: 11px;
+  font-weight: 700;
+  background: #FEE2E2;
+  color: #DC2626;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.view-toggle {
+  display: flex;
+  background: #F3F4F6;
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6B7280;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.toggle-btn.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.header-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.add-task-btn {
+  background: #4F46E5;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.add-task-btn:hover {
+  background: #4338CA;
+  transform: translateY(-1px);
+}
+
+.add-task-btn:active {
+  transform: translateY(0);
+}
+
+.app-main {
+  flex: 1;
+  padding: 24px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .app-header { padding: 0 16px; }
+  .logo-text { display: none; }
+  .toggle-btn span:first-child { display: none; }
+  .app-main { padding: 16px; }
+}
+
+/* ── Database status UI ── */
+.error-banner {
+  background: #FEE2E2;
+  color: #991B1B;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #FECACA;
+}
+
+.error-banner button {
+  margin-left: auto;
+  background: #DC2626;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 80px 20px;
+  color: #6B7280;
+  font-size: 14px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #E5E7EB;
+  border-top-color: #4F46E5;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.refresh-btn {
+  background: #F3F4F6;
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.refresh-btn:hover {
+  background: #E5E7EB;
+  color: #111827;
+}
+.dark-mode-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.dark-mode-btn:hover {
+  background: #F3F4F6;
+}
+
+/* ── Dark mode ── */
+body.dark {
+  background: #0F1117;
+  color: #F9FAFB;
+}
+
+body.dark .app-header {
+  background: #1A1D27;
+  border-bottom-color: #2D3148;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.4);
+}
+
+body.dark .logo-text {
+  color: #F9FAFB;
+}
+
+body.dark .dark-mode-btn:hover {
+  background: #2D3148;
+}
+
+body.dark .view-toggle {
+  background: #2D3148;
+}
+
+body.dark .toggle-btn {
+  color: #9CA3AF;
+}
+
+body.dark .toggle-btn.active {
+  background: #383D5C;
+  color: #F9FAFB;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+body.dark .refresh-btn {
+  background: #2D3148;
+  color: #9CA3AF;
+}
+
+body.dark .refresh-btn:hover {
+  background: #383D5C;
+  color: #F9FAFB;
+}
+
+body.dark .calendar-view,
+body.dark .list-view {
+  background: #1A1D27;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+}
+
+body.dark .cal-header {
+  border-bottom-color: #2D3148;
+}
+
+body.dark .cal-month {
+  color: #F9FAFB;
+}
+
+body.dark .day-header {
+  color: #6B7280;
+  border-bottom-color: #2D3148;
+}
+
+body.dark .day-cell {
+  border-color: #2D3148;
+}
+
+body.dark .day-cell:hover:not(.empty) {
+  background: #22253A;
+}
+
+body.dark .day-cell.empty {
+  background: #161820;
+}
+
+body.dark .day-cell.today {
+  background: #1E2240;
+}
+
+body.dark .day-num {
+  color: #D1D5DB;
+}
+
+body.dark .list-toolbar {
+  border-bottom-color: #2D3148;
+}
+
+body.dark .chip {
+  background: #1A1D27;
+  border-color: #2D3148;
+  color: #9CA3AF;
+}
+
+body.dark .chip:hover {
+  border-color: #4B5563;
+  color: #D1D5DB;
+}
+
+body.dark .chip.active {
+  background: #F9FAFB;
+  color: #111827;
+  border-color: #F9FAFB;
+}
+
+body.dark .task-table thead tr {
+  border-bottom-color: #2D3148;
+}
+
+body.dark .task-table th {
+  color: #6B7280;
+}
+
+body.dark .task-table tbody tr {
+  border-bottom-color: #1E2130;
+}
+
+body.dark .task-table tbody tr:hover {
+  background: #22253A;
+}
+
+body.dark .task-table td {
+  color: #D1D5DB;
+}
+
+body.dark .task-name {
+  color: #F9FAFB;
+}
+
+body.dark .time-left {
+  color: #F9FAFB;
+}
+
+body.dark .modal {
+  background: #1A1D27;
+}
+
+body.dark .modal-header {
+  border-bottom-color: #2D3148;
+}
+
+body.dark .modal-header h2 {
+  color: #F9FAFB;
+}
+
+body.dark .modal-footer {
+  border-top-color: #2D3148;
+}
+
+body.dark .field label {
+  color: #D1D5DB;
+}
+
+body.dark .field input[type="text"],
+body.dark .field input[type="date"],
+body.dark .field input[type="time"],
+body.dark .field textarea {
+  background: #22253A;
+  border-color: #2D3148;
+  color: #F9FAFB;
+}
+
+body.dark .field input:focus,
+body.dark .field textarea:focus {
+  border-color: #6366F1;
+}
+
+body.dark .type-option {
+  background: #22253A;
+  border-color: #2D3148;
+  color: #D1D5DB;
+}
+
+body.dark .btn-cancel {
+  background: #2D3148;
+  color: #D1D5DB;
+}
+
+body.dark .btn-cancel:hover {
+  background: #383D5C;
+}
+
+body.dark .task-tooltip {
+  background: #1A1D27;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+body.dark .tooltip-row {
+  color: #D1D5DB;
+}
+
+body.dark .tooltip-extra {
+  background: #22253A;
+  color: #9CA3AF;
+}
+
+body.dark .empty-state {
+  color: #6B7280;
+}
+
+body.dark .empty-state p {
+  color: #9CA3AF;
+}
